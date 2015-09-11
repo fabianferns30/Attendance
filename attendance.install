@@ -1,0 +1,62 @@
+<?php
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function attendance_install() {
+    $t = get_t();
+ 
+  // machine name of the content type
+  $name = 'attendance';
+ 
+  // define the node type
+  $attendance = array(
+    'type' => $name,
+    'name' => $t('Attendance Manager'),
+    'base' => 'node_content',
+    'title_label' => $t('Day Atetndance'),
+    'description' => $t('Content type to store the attendance for each day for a user.'),
+    'custom' => TRUE,
+  );
+ 
+  // set other node defaults not declared above
+  $content_type = node_type_set_defaults($attendance);
+ 
+  // add the body field
+  node_add_body_field($content_type, $t('Job Description'));
+ 
+  // save the content type
+  node_type_save($content_type);
+ 
+
+  /**** STEP 2 ****/
+ 
+  // add peristant variables that control settings
+  variable_set('additional_settings__active_tab_' . $name, 'edit-menu');
+  variable_set('node_preview_' . $name, 2);
+  variable_set('node_options_' . $name, array(0 => 'status', 1 => 'promote'));
+  variable_set('node_submitted_' . $name, 0);
+  variable_set('menu_options_' . $name, array());
+  variable_set('menu_parent_' . $name, 'main-menu:0');
+ 
+
+  /**** STEP 3 ****/
+ 
+  // create all the fields we are adding to our content type
+  foreach (_jobs_installed_fields() as $field) {
+    field_create_field($field);
+                           }
+
+  // create all the instances for our fields
+  foreach (_jobs_installed_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $jobs['type'];
+    field_create_instance($instance);
+  }
+}

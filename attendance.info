@@ -1,0 +1,4 @@
+name = Attendance
+description = "Provides attendance records and reports(to users with the proper permissions)."
+package = Attendance
+core = 7.x
